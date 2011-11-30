@@ -30,9 +30,9 @@ package org.as3commons.collections.fx.events {
 	 * <code>iterator()</code></li>	 * </ul>
 	 * 
 	 * @author Jens Struwe 29.03.2010
-	 * @see CollectionEvent CollectionEvent - Description of the base collection event properties.
+	 * @see FxCollectionEvent FxCollectionEvent - Description of the base collection event properties.
 	 */
-	public class SetEvent extends CollectionEvent {
+	public class SetEvent extends FxCollectionEvent {
 
 		/**
 		 * The bindable set.

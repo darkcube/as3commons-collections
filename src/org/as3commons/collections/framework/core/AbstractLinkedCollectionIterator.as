@@ -106,7 +106,7 @@ package org.as3commons.collections.framework.core {
 		/**
 		 * @inheritDoc
 		 */
-		public function get current() : * {
+		public function get currentItem() : * {
 			if (!_current) return undefined;
 			return _current.item;
 		}
@@ -114,7 +114,7 @@ package org.as3commons.collections.framework.core {
 		/**
 		 * @inheritDoc
 		 */
-		public function remove() : Boolean {
+		public function removeItem() : Boolean {
 			if (!_current) return false;
 			
 			_next = _current.right;

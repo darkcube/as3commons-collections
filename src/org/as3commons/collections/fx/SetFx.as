@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 package org.as3commons.collections.fx {
-	import org.as3commons.collections.Set;
-	import org.as3commons.collections.framework.ICollectionFx;
-	import org.as3commons.collections.fx.events.CollectionEvent;
-	import org.as3commons.collections.fx.events.SetEvent;
-
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	
+	import mx.collections.ICollectionView;
+	import mx.collections.ISort;
+	import mx.collections.IViewCursor;
+	import mx.events.CollectionEvent;
+	import mx.events.CollectionEventKind;
+	
+	import org.as3commons.collections.Set;
+	import org.as3commons.collections.framework.ICollectionFx;
+	import org.as3commons.collections.framework.core.SetIterator;
+	import org.as3commons.collections.fx.events.FxCollectionEvent;
+	import org.as3commons.collections.fx.events.SetEvent;
+	import org.as3commons.collections.fx.iterators.SetIteratorFx;
 
 	/**
 	 * Bindable version of the <code>Set</code> implementation.
@@ -29,9 +37,9 @@ package org.as3commons.collections.fx {
 	 * <p><strong><code>SetFx</code> event kinds</strong></p>
 	 * 
 	 * <ul>
-	 * <li><code>CollectionEvent.ITEM_ADDED</code></li>
-	 * <li><code>CollectionEvent.ITEM_REMOVED</code></li>
-	 * <li><code>CollectionEvent.RESET</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_ADDED</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_REMOVED</code></li>
+	 * <li><code>FxCollectionEvent.RESET</code></li>
 	 * </ul>
 	 * 
 	 * <p><strong>Note</strong></p>
@@ -72,10 +80,11 @@ package org.as3commons.collections.fx {
 			var added : Boolean = super.add(item);
 			if (added) {
 				dispatchEvent(new SetFxEvent(
-					CollectionEvent.ITEM_ADDED,
+					FxCollectionEvent.ITEM_ADDED,
 					this,
 					item
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			}
 			return added;
 		}
@@ -87,10 +96,11 @@ package org.as3commons.collections.fx {
 			var removed : Boolean = super.remove(item);
 			if (removed) {
 				dispatchEvent(new SetFxEvent(
-					CollectionEvent.ITEM_REMOVED,
+					FxCollectionEvent.ITEM_REMOVED,
 					this,
 					item
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 			}
 			return removed;
 		}
@@ -100,7 +110,10 @@ package org.as3commons.collections.fx {
 		 */
 		override public function clear() : Boolean {
 			var removed : Boolean = super.clear();
-			if (removed) dispatchEvent(new SetEvent(CollectionEvent.RESET, this));
+			if (removed) {
+				dispatchEvent(new SetEvent(FxCollectionEvent.RESET, this));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
+			}
 			return removed;
 		}
 		
@@ -141,6 +154,84 @@ package org.as3commons.collections.fx {
 		 */
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void {
 			_eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		}
+		
+		/*
+		 * ICollectionView
+		 */
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get length():int
+		{
+			return size;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get filterFunction():Function
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set filterFunction(value:Function):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get sort():ISort
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set sort(value:ISort):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function createCursor():IViewCursor
+		{
+			return new SetIteratorFx(this);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function contains(item:Object):Boolean
+		{
+			return has(item);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function disableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function enableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function itemUpdated(item:Object, property:Object = null,
+							 oldValue:Object = null, newValue:Object = null):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function refresh():Boolean
+		{
+			return true;
 		}
 	}
 }

@@ -67,9 +67,8 @@ package org.as3commons.collections.framework.core {
 		 * @inheritDoc
 		 */
 		override protected function removeCurrent() : void {
-			_set.remove(super.current);
+			_set.remove(super.currentItem);
 			super.removeCurrent();
 		}
-
 	}
 }

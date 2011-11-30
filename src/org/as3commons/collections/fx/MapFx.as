@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 package org.as3commons.collections.fx {
-	import org.as3commons.collections.Map;
-	import org.as3commons.collections.framework.ICollectionFx;
-	import org.as3commons.collections.fx.events.CollectionEvent;
-
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	
+	import mx.collections.ISort;
+	import mx.collections.IViewCursor;
+	import mx.events.CollectionEvent;
+	import mx.events.CollectionEventKind;
+	
+	import org.as3commons.collections.Map;
+	import org.as3commons.collections.framework.ICollectionFx;
+	import org.as3commons.collections.fx.events.FxCollectionEvent;
+	import org.as3commons.collections.fx.iterators.MapIteratorFx;
 
 	/**
 	 * Bindable version of the <code>Map</code> implementation.
@@ -28,10 +34,10 @@ package org.as3commons.collections.fx {
 	 * <p><strong><code>MapFx</code> event kinds</strong></p>
 	 * 
 	 * <ul>
-	 * <li><code>CollectionEvent.ITEM_ADDED</code></li>
-	 * <li><code>CollectionEvent.ITEM_REPLACED</code></li>
-	 * <li><code>CollectionEvent.ITEM_REMOVED</code></li>
-	 * <li><code>CollectionEvent.RESET</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_ADDED</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_REPLACED</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_REMOVED</code></li>
+	 * <li><code>FxCollectionEvent.RESET</code></li>
 	 * </ul>
 	 * 
 	 * <p><strong>Note</strong></p>
@@ -72,11 +78,12 @@ package org.as3commons.collections.fx {
 			var added : Boolean = super.add(key, item);
 			if (added) {
 				dispatchEvent(new MapFxEvent(
-					CollectionEvent.ITEM_ADDED,
+					FxCollectionEvent.ITEM_ADDED,
 					this,
 					key,
 					item
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			}
 			return added;
 		}
@@ -88,11 +95,12 @@ package org.as3commons.collections.fx {
 			var replaced : Boolean = super.replaceFor(key, item);
 			if (replaced) {
 				dispatchEvent(new MapFxEvent(
-					CollectionEvent.ITEM_REPLACED,
+					FxCollectionEvent.ITEM_REPLACED,
 					this,
 					key,
 					item
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REPLACE));
 			}
 			return replaced;
 		}
@@ -104,11 +112,12 @@ package org.as3commons.collections.fx {
 			var item : * = super.removeKey(key);
 			if (item !== undefined) {
 				dispatchEvent(new MapFxEvent(
-					CollectionEvent.ITEM_REMOVED,
+					FxCollectionEvent.ITEM_REMOVED,
 					this,
 					key,
 					item
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 			}
 			return item;
 		}
@@ -120,9 +129,10 @@ package org.as3commons.collections.fx {
 			var removed : Boolean = super.clear();
 			if (removed) {
 				dispatchEvent(new MapFxEvent(
-					CollectionEvent.RESET,
+					FxCollectionEvent.RESET,
 					this
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
 			}
 			return removed;
 		}
@@ -165,6 +175,84 @@ package org.as3commons.collections.fx {
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void {
 			_eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
+		
+		/*
+		 * ICollectionView
+		 */
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get length():int
+		{
+			return size;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get filterFunction():Function
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set filterFunction(value:Function):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get sort():ISort
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set sort(value:ISort):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function createCursor():IViewCursor
+		{
+			return new MapIteratorFx(this);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function contains(item:Object):Boolean
+		{
+			return has(item);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function disableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function enableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function itemUpdated(item:Object, property:Object = null,
+									oldValue:Object = null, newValue:Object = null):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function refresh():Boolean
+		{
+			return true;
+		}
 	
 		/*
 		 * Protected
@@ -175,11 +263,12 @@ package org.as3commons.collections.fx {
 		 */
 		override protected function itemRemoved(key : *, item : *) : void {
 			dispatchEvent(new MapFxEvent(
-				CollectionEvent.ITEM_REMOVED,
+				FxCollectionEvent.ITEM_REMOVED,
 				this,
 				key,
 				item
 			));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 		}
 	}
 }

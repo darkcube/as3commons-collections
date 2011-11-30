@@ -77,12 +77,12 @@ package org.as3commons.collections {
 		/**
 		 * The non string items.
 		 */
-		private var _items : Dictionary;
+		protected var _items : Dictionary;
 
 		/**
 		 * The string items.
 		 */
-		private var _stringItems : Object;
+		protected var _stringItems : Object;
 		
 		/**
 		 * LinkedSet constructor.

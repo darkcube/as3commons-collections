@@ -179,7 +179,7 @@ package org.as3commons.collections.utils {
 			var numAdded : uint;
 			var iterator : IMapIterator = source.iterator() as IMapIterator;
 			while (iterator.next() !== undefined) {
-				if (map.add(iterator.key, iterator.current)) numAdded++;
+				if (map.add(iterator.key, iterator.currentItem)) numAdded++;
 			} 
 			return numAdded;
 		}

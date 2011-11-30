@@ -15,6 +15,8 @@
  */
 package org.as3commons.collections.framework {
 	import flash.events.IEventDispatcher;
+	
+	import mx.collections.ICollectionView;
 
 	/**
 	 * Bindable collection marker interface.
@@ -22,6 +24,6 @@ package org.as3commons.collections.framework {
 	 * @author Jens Struwe 22.03.2010
 	 * @see org.as3commons.collections.fx.events.CollectionEvent CollectionEvent - Collection event description and usage examples. 
 	 */
-	public interface ICollectionFx extends ICollection, IEventDispatcher {
+	public interface ICollectionFx extends ICollection, IEventDispatcher, ICollectionView {
 	}
 }

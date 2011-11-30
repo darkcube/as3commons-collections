@@ -96,13 +96,13 @@ package org.as3commons.collections.framework.core {
 		 * @inheritDoc
 		 */
 		public function previous() : * {
-			if (_next == _collection.mostLeftNode_internal() || !_collection.size) {
+			if (_current == _collection.mostLeftNode_internal() || !_collection.size || !_current) {
 				_current = null;
 				return undefined;
 			}
 
-			_next = _next == null ? _collection.mostRightNode_internal() : _collection.previousNode_internal(_next);
-			_current = _next;
+			_next = _current;
+			_current = _collection.previousNode_internal(_current);
 
 			return _current.item;
 		}
@@ -110,7 +110,7 @@ package org.as3commons.collections.framework.core {
 		/**
 		 * @inheritDoc
 		 */
-		public function get current() : * {
+		public function get currentItem() : * {
 			if (!_current) return undefined;
 			return _current.item;
 		}
@@ -118,7 +118,7 @@ package org.as3commons.collections.framework.core {
 		/**
 		 * @inheritDoc
 		 */
-		public function remove() : Boolean {
+		public function removeItem() : Boolean {
 			if (!_current) return false;
 			
 			_next = _collection.nextNode_internal(_current);

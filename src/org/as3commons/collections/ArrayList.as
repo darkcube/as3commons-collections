@@ -138,7 +138,7 @@ package org.as3commons.collections {
 		/**
 		 * @inheritDoc
 		 */
-		public function sort(comparator : IComparator) : Boolean {
+		public function sortCollection(comparator : IComparator) : Boolean {
 			if (_array.length < 2) return false;
 			ArrayUtils.mergeSort(_array, comparator);
 			return true;

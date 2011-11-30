@@ -63,7 +63,7 @@ package org.as3commons.collections.framework.core {
 		 * @inheritDoc
 		 */
 		public function get key() : * {
-			return super.current;
+			return super.currentItem;
 		}
 	
 		/*
@@ -80,8 +80,8 @@ package org.as3commons.collections.framework.core {
 		/**
 		 * @inheritDoc
 		 */
-		override public function get current() : * {
-			return _map.itemFor(super.current);
+		override public function get currentItem() : * {
+			return _map.itemFor(super.currentItem);
 		}
 	
 		/**
@@ -99,7 +99,7 @@ package org.as3commons.collections.framework.core {
 		 * @inheritDoc
 		 */
 		override protected function removeCurrent() : void {
-			_map.removeKey(super.current);
+			_map.removeKey(super.currentItem);
 			super.removeCurrent();
 		}
 	}

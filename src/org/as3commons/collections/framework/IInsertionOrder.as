@@ -43,7 +43,7 @@ package org.as3commons.collections.framework {
 		 * @param comparator The sort criterion.
 		 * @return <code>true</code> if the linked collection has been sorted.
 		 */
-		function sort(comparator : IComparator) : Boolean;
+		function sortCollection(comparator : IComparator) : Boolean;
 
 	}
 }

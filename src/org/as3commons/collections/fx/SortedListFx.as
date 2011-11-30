@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 package org.as3commons.collections.fx {
-	import org.as3commons.collections.SortedList;
-	import org.as3commons.collections.framework.IComparator;
-	import org.as3commons.collections.framework.ICollectionFx;
-	import org.as3commons.collections.fx.events.CollectionEvent;
-	import org.as3commons.collections.fx.events.ListEvent;
-
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	
+	import mx.collections.ISort;
+	import mx.collections.IViewCursor;
+	import mx.events.CollectionEvent;
+	import mx.events.CollectionEventKind;
+	
+	import org.as3commons.collections.SortedList;
+	import org.as3commons.collections.framework.ICollectionFx;
+	import org.as3commons.collections.framework.IComparator;
+	import org.as3commons.collections.fx.events.FxCollectionEvent;
+	import org.as3commons.collections.fx.events.ListEvent;
+	import org.as3commons.collections.fx.iterators.SortedListIteratorFx;
 
 	/**
 	 * Bindable version of the <code>SortedList</code> implementation.
@@ -30,9 +36,9 @@ package org.as3commons.collections.fx {
 	 * <p><strong><code>SortedListFx</code> event kinds</strong></p>
 	 * 
 	 * <ul>
-	 * <li><code>CollectionEvent.ITEM_ADDED</code></li>
-	 * <li><code>CollectionEvent.ITEM_REMOVED</code></li>
-	 * <li><code>CollectionEvent.RESET</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_ADDED</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_REMOVED</code></li>
+	 * <li><code>FxCollectionEvent.RESET</code></li>
 	 * </ul>
 	 * 
 	 * <p id="link_SortedListFxExample"><strong>SortedListFx example</strong></p>
@@ -70,7 +76,8 @@ package org.as3commons.collections.fx {
 		 */
 		override public function set array(array : Array) : void {
 			super.array = array;
-			dispatchEvent(new ListEvent(CollectionEvent.RESET, this));
+			dispatchEvent(new ListEvent(FxCollectionEvent.RESET, this));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
 		}
 
 		/**
@@ -79,13 +86,14 @@ package org.as3commons.collections.fx {
 		override public function add(item : *) : uint {
 			var index : uint = super.add(item);
 			dispatchEvent(new ListEvent(
-				CollectionEvent.ITEM_ADDED,
+				FxCollectionEvent.ITEM_ADDED,
 				this,
 				index,
 				1,
 				item,
 				null
 			));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			return index;
 		}
 
@@ -94,14 +102,17 @@ package org.as3commons.collections.fx {
 		 */
 		override public function removeFirst() : * {
 			var item : * = super.removeFirst();
-			if (item !== undefined) dispatchEvent(new ListEvent(
-				CollectionEvent.ITEM_REMOVED,
-				this,
-				0,
-				1,
-				item,
-				null
-			));
+			if (item !== undefined) {
+				dispatchEvent(new ListEvent(
+					FxCollectionEvent.ITEM_REMOVED,
+					this,
+					0,
+					1,
+					item,
+					null
+				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+			}
 			return item;
 		}
 
@@ -110,14 +121,17 @@ package org.as3commons.collections.fx {
 		 */
 		override public function removeLast() : * {
 			var item : * = super.removeLast();
-			if (item !== undefined) dispatchEvent(new ListEvent(
-				CollectionEvent.ITEM_REMOVED,
-				this,
-				_array.length,
-				1,
-				item,
-				null
-			));
+			if (item !== undefined) {
+				dispatchEvent(new ListEvent(
+					FxCollectionEvent.ITEM_REMOVED,
+					this,
+					_array.length,
+					1,
+					item,
+					null
+				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+			}
 			return item;
 		}
 
@@ -126,14 +140,17 @@ package org.as3commons.collections.fx {
 		 */
 		override public function removeAt(index : uint) : * {
 			var item : * = super.removeAt(index);
-			if (item !== undefined) dispatchEvent(new ListEvent(
-				CollectionEvent.ITEM_REMOVED,
-				this,
-				index,
-				1,
-				item,
-				null
-			));
+			if (item !== undefined) {
+				dispatchEvent(new ListEvent(
+					FxCollectionEvent.ITEM_REMOVED,
+					this,
+					index,
+					1,
+					item,
+					null
+				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+			}
 			return item;
 		}
 
@@ -142,14 +159,17 @@ package org.as3commons.collections.fx {
 		 */
 		override public function removeAllAt(index : uint, numItems : uint) : Array {
 			var items : Array = super.removeAllAt(index, numItems);
-			if (items.length) dispatchEvent(new ListEvent(
-				CollectionEvent.ITEM_REMOVED,
-				this,
-				index,
-				items.length,
-				null,
-				items
-			));
+			if (items.length) {
+				dispatchEvent(new ListEvent(
+					FxCollectionEvent.ITEM_REMOVED,
+					this,
+					index,
+					items.length,
+					null,
+					items
+				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+			}
 			return items;
 		}
 
@@ -162,7 +182,10 @@ package org.as3commons.collections.fx {
 		 */
 		override public function clear() : Boolean {
 			var removed : Boolean = super.clear();
-			if (removed) dispatchEvent(new ListEvent(CollectionEvent.RESET, this));
+			if (removed) {
+				dispatchEvent(new ListEvent(FxCollectionEvent.RESET, this));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
+			}
 			return removed;
 		}
 
@@ -204,6 +227,84 @@ package org.as3commons.collections.fx {
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void {
 			_eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
+		
+		/*
+		 * ICollectionView
+		 */
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get length():int
+		{
+			return size;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get filterFunction():Function
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set filterFunction(value:Function):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get sort():ISort
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set sort(value:ISort):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function createCursor():IViewCursor
+		{
+			return new SortedListIteratorFx(this);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function contains(item:Object):Boolean
+		{
+			return has(item);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function disableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function enableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function itemUpdated(item:Object, property:Object = null,
+									oldValue:Object = null, newValue:Object = null):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function refresh():Boolean
+		{
+			return true;
+		}
 
 		/*
 		 * Protected
@@ -214,13 +315,14 @@ package org.as3commons.collections.fx {
 		 */
 		override protected function itemRemoved(index : uint, item : *) : void {
 			dispatchEvent(new ListEvent(
-				CollectionEvent.ITEM_REMOVED,
+				FxCollectionEvent.ITEM_REMOVED,
 				this,
 				index,
 				1,
 				item,
 				null
 			));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 		}
 
 	}

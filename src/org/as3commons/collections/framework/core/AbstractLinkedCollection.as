@@ -82,7 +82,7 @@ package org.as3commons.collections.framework.core {
 		/**
 		 * @inheritDoc
 		 */
-		public function sort(comparator : IComparator) : Boolean {
+		public function sortCollection(comparator : IComparator) : Boolean {
 			if (_size < 2) return false;
 			mergeSort(comparator);
 			return true;

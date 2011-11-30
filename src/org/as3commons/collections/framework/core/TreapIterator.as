@@ -136,14 +136,14 @@ package org.as3commons.collections.framework.core {
 		/**
 		 * @inheritDoc
 		 */
-		public function get current() : * {
+		public function get currentItem() : * {
 			return _current ? _current.item : undefined;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function remove() : Boolean {
+		public function removeItem() : Boolean {
 			if (!_current) return false;
 			
 			_next = _treap.nextNode_internal(_current);

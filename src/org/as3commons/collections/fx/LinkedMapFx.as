@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 package org.as3commons.collections.fx {
-	import org.as3commons.collections.LinkedMap;
-	import org.as3commons.collections.framework.IComparator;
-	import org.as3commons.collections.framework.ICollectionFx;
-	import org.as3commons.collections.framework.core.LinkedMapNode;
-	import org.as3commons.collections.framework.core.LinkedNode;
-	import org.as3commons.collections.framework.core.as3commons_collections;
-	import org.as3commons.collections.fx.events.CollectionEvent;
-	import org.as3commons.collections.fx.events.MapEvent;
-
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	
+	import mx.collections.ISort;
+	import mx.collections.IViewCursor;
+	import mx.events.CollectionEvent;
+	import mx.events.CollectionEventKind;
+	
+	import org.as3commons.collections.LinkedMap;
+	import org.as3commons.collections.framework.ICollectionFx;
+	import org.as3commons.collections.framework.IComparator;
+	import org.as3commons.collections.framework.core.LinkedMapNode;
+	import org.as3commons.collections.framework.core.LinkedNode;
+	import org.as3commons.collections.framework.core.as3commons_collections;
+	import org.as3commons.collections.fx.events.FxCollectionEvent;
+	import org.as3commons.collections.fx.events.MapEvent;
+	import org.as3commons.collections.fx.iterators.LinkedMapIteratorFx;
 
 	/**
 	 * Bindable version of the <code>LinkedMap</code> implementation.
@@ -33,10 +39,10 @@ package org.as3commons.collections.fx {
 	 * <p><strong><code>LinkedMapFx</code> event kinds</strong></p>
 	 * 
 	 * <ul>
-	 * <li><code>CollectionEvent.ITEM_ADDED</code></li>
-	 * <li><code>CollectionEvent.ITEM_REPLACED</code></li>
-	 * <li><code>CollectionEvent.ITEM_REMOVED</code></li>
-	 * <li><code>CollectionEvent.RESET</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_ADDED</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_REPLACED</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_REMOVED</code></li>
+	 * <li><code>FxCollectionEvent.RESET</code></li>
 	 * </ul>
 	 * 
 	 * <p id="link_LinkedMapFxExample"><strong>LinkedMapFx example</strong></p>
@@ -74,12 +80,13 @@ package org.as3commons.collections.fx {
 			var added : Boolean = super.addFirst(key, item);
 			if (added) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_ADDED,
+					FxCollectionEvent.ITEM_ADDED,
 					this,
 					key,
 					item,
 					LinkedMapNode(firstNode_internal)
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			}
 			return added;
 		}
@@ -91,12 +98,13 @@ package org.as3commons.collections.fx {
 			var added : Boolean = super.addLast(key, item);
 			if (added) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_ADDED,
+					FxCollectionEvent.ITEM_ADDED,
 					this,
 					key,
 					item,
 					LinkedMapNode(lastNode_internal)
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			}
 			return added;
 		}
@@ -108,12 +116,13 @@ package org.as3commons.collections.fx {
 			var added : Boolean = super.addBefore(nextKey, key, item);
 			if (added) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_ADDED,
+					FxCollectionEvent.ITEM_ADDED,
 					this,
 					key,
 					item,
 					getNode(key)
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			}
 			return added;
 		}
@@ -125,12 +134,13 @@ package org.as3commons.collections.fx {
 			var added : Boolean = super.addAfter(previousKey, key, item);
 			if (added) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_ADDED,
+					FxCollectionEvent.ITEM_ADDED,
 					this,
 					key,
 					item,
 					getNode(key)
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			}
 			return added;
 		}
@@ -140,16 +150,22 @@ package org.as3commons.collections.fx {
 		 */
 		override public function reverse() : Boolean {
 			var reversed : Boolean = super.reverse();
-			if (reversed) dispatchEvent(new MapEvent(CollectionEvent.RESET, this));
+			if (reversed) {
+				dispatchEvent(new MapEvent(FxCollectionEvent.RESET, this));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
+			}
 			return reversed;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		override public function sort(comparator : IComparator) : Boolean {
-			var sorted : Boolean = super.sort(comparator);
-			if (sorted) dispatchEvent(new MapEvent(CollectionEvent.RESET, this));
+		override public function sortCollection(comparator : IComparator) : Boolean {
+			var sorted : Boolean = super.sortCollection(comparator);
+			if (sorted) {
+				dispatchEvent(new MapEvent(FxCollectionEvent.RESET, this));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
+			}
 			return sorted;
 		}
 
@@ -161,12 +177,13 @@ package org.as3commons.collections.fx {
 			var item : * = super.removeFirst();
 			if (item !== undefined) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_REMOVED,
+					FxCollectionEvent.ITEM_REMOVED,
 					this,
 					first.key,
 					first.item,
 					LinkedMapNode(firstNode_internal)
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 				return first.item;
 			}
 			return undefined;
@@ -180,11 +197,12 @@ package org.as3commons.collections.fx {
 			var item : * = super.removeLast();
 			if (item !== undefined) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_REMOVED,
+					FxCollectionEvent.ITEM_REMOVED,
 					this,
 					last.key,
 					last.item
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 				return last.item;
 			}
 			return undefined;
@@ -201,12 +219,13 @@ package org.as3commons.collections.fx {
 			var added : Boolean = super.add(key, item);
 			if (added) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_ADDED,
+					FxCollectionEvent.ITEM_ADDED,
 					this,
 					key,
 					item,
 					getNode(key)
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 			}
 			return added;
 		}
@@ -218,12 +237,13 @@ package org.as3commons.collections.fx {
 			var replaced : Boolean = super.replaceFor(key, item);
 			if (replaced) {
 				dispatchEvent(new LinkedMapFxEvent(
-					CollectionEvent.ITEM_REPLACED,
+					FxCollectionEvent.ITEM_REPLACED,
 					this,
 					key,
 					item,
 					getNode(key)
 				));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REPLACE));
 			}
 			return replaced;
 		}
@@ -237,7 +257,10 @@ package org.as3commons.collections.fx {
 		 */
 		override public function clear() : Boolean {
 			var removed : Boolean = super.clear();
-			if (removed) dispatchEvent(new MapEvent(CollectionEvent.RESET, this));
+			if (removed) {
+				dispatchEvent(new MapEvent(FxCollectionEvent.RESET, this));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
+			}
 			return removed;
 		}
 		
@@ -279,6 +302,85 @@ package org.as3commons.collections.fx {
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void {
 			_eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
+		
+		/*
+		 * ICollectionView
+		 */
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get length():int
+		{
+			return size;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get filterFunction():Function
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set filterFunction(value:Function):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get sort():ISort
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set sort(value:ISort):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function createCursor():IViewCursor
+		{
+			var node : LinkedMapNode = _items[undefined];
+			return new LinkedMapIteratorFx(this, node);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function contains(item:Object):Boolean
+		{
+			return has(item);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function disableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function enableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function itemUpdated(item:Object, property:Object = null,
+									oldValue:Object = null, newValue:Object = null):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function refresh():Boolean
+		{
+			return true;
+		}
 
 		/*
 		 * Protected
@@ -291,12 +393,13 @@ package org.as3commons.collections.fx {
 			var nextNode : LinkedNode = node.right;
 			super.removeNode(node);
 			dispatchEvent(new LinkedMapFxEvent(
-				CollectionEvent.ITEM_REMOVED,
+				FxCollectionEvent.ITEM_REMOVED,
 				this,
 				LinkedMapNode(node).key,
 				node.item,
 				nextNode as LinkedMapNode
 			));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 		}
 	}
 }

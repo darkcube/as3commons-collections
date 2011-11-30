@@ -34,9 +34,9 @@ package org.as3commons.collections.fx.events {
 	 * </ul>
 	 * 
 	 * @author Jens Struwe 01.03.2010
-	 * @see CollectionEvent CollectionEvent - Description of the base collection event properties.
+	 * @see FxCollectionEvent FxCollectionEvent - Description of the base collection event properties.
 	 */
-	public class ListEvent extends CollectionEvent {
+	public class ListEvent extends FxCollectionEvent {
 		
 		/**
 		 * The bindable list.

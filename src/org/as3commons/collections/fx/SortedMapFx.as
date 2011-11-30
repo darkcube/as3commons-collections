@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 package org.as3commons.collections.fx {
-	import org.as3commons.collections.SortedMap;
-	import org.as3commons.collections.framework.IComparator;
-	import org.as3commons.collections.framework.ICollectionFx;
-	import org.as3commons.collections.framework.core.SortedMapNode;
-	import org.as3commons.collections.framework.core.SortedNode;
-	import org.as3commons.collections.framework.core.as3commons_collections;
-	import org.as3commons.collections.fx.events.CollectionEvent;
-
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	
+	import mx.collections.ICollectionView;
+	import mx.collections.ISort;
+	import mx.collections.IViewCursor;
+	import mx.events.CollectionEvent;
+	import mx.events.CollectionEventKind;
+	
+	import org.as3commons.collections.SortedMap;
+	import org.as3commons.collections.framework.ICollectionFx;
+	import org.as3commons.collections.framework.IComparator;
+	import org.as3commons.collections.framework.core.SortedMapIterator;
+	import org.as3commons.collections.framework.core.SortedMapNode;
+	import org.as3commons.collections.framework.core.SortedNode;
+	import org.as3commons.collections.framework.core.as3commons_collections;
+	import org.as3commons.collections.fx.events.FxCollectionEvent;
+	import org.as3commons.collections.fx.iterators.SortedMapIteratorFx;
 
 	/**
 	 * Bindable version of the <code>SortedMap</code> implementation.
@@ -32,9 +40,9 @@ package org.as3commons.collections.fx {
 	 * <p><strong><code>SortedMapFx</code> event kinds</strong></p>
 	 * 
 	 * <ul>
-	 * <li><code>CollectionEvent.ITEM_ADDED</code></li>
-	 * <li><code>CollectionEvent.ITEM_REMOVED</code></li>
-	 * <li><code>CollectionEvent.RESET</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_ADDED</code></li>
+	 * <li><code>FxCollectionEvent.ITEM_REMOVED</code></li>
+	 * <li><code>FxCollectionEvent.RESET</code></li>
 	 * </ul>
 	 * 
 	 * <p>As of its sort order, the <code>SortedMap</code> may change the
@@ -79,7 +87,10 @@ package org.as3commons.collections.fx {
 		 */
 		override public function clear() : Boolean {
 			var removed : Boolean = super.clear();
-			if (removed) dispatchEvent(new SortedMapFxEvent(CollectionEvent.RESET, this));
+			if (removed) {
+				dispatchEvent(new SortedMapFxEvent(FxCollectionEvent.RESET, this));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.RESET));
+			}
 			return removed;
 		}
 
@@ -121,6 +132,85 @@ package org.as3commons.collections.fx {
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void {
 			_eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
+		
+		/*
+		 * ICollectionView
+		 */
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get length():int
+		{
+			return size;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get filterFunction():Function
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set filterFunction(value:Function):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get sort():ISort
+		{
+			return null;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set sort(value:ISort):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function createCursor():IViewCursor
+		{
+			var node : SortedMapNode = _items[undefined];
+			return new SortedMapIteratorFx(this, node);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function contains(item:Object):Boolean
+		{
+			return has(item);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function disableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function enableAutoUpdate():void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function itemUpdated(item:Object, property:Object = null,
+									oldValue:Object = null, newValue:Object = null):void {}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function refresh():Boolean
+		{
+			return true;
+		}
 
 		/*
 		 * Protected
@@ -132,12 +222,13 @@ package org.as3commons.collections.fx {
 		override protected function addNode(node : SortedNode) : void {
 			super.addNode(node);
 			dispatchEvent(new SortedMapFxEvent(
-				CollectionEvent.ITEM_ADDED,
+				FxCollectionEvent.ITEM_ADDED,
 				this,
 				SortedMapNode(node).key,
 				node.item,
 				node as SortedMapNode
 			));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
 		}
 
 		/**
@@ -147,12 +238,13 @@ package org.as3commons.collections.fx {
 			var nextNode : SortedMapNode = nextNode_internal(node) as SortedMapNode;
 			super.removeNode(node);
 			dispatchEvent(new SortedMapFxEvent(
-				CollectionEvent.ITEM_REMOVED,
+				FxCollectionEvent.ITEM_REMOVED,
 				this,
 				SortedMapNode(node).key,
 				node.item,
 				nextNode
 			));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
 		}
 	}
 }

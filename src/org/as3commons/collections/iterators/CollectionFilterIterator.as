@@ -197,14 +197,14 @@ package org.as3commons.collections.iterators {
 		/**
 		 * @inheritDoc
 		 */
-		public function get current() : * {
+		public function get currentItem() : * {
 			return _current;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function remove() : Boolean {
+		public function removeItem() : Boolean {
 			if (_current === undefined) return false;
 			
 			if (_lastLookUp == "next") {
@@ -215,7 +215,7 @@ package org.as3commons.collections.iterators {
 				_iterator.previous();
 			}
 			
-			_iterator.remove();
+			_iterator.removeItem();
 			_next = _previous = _current = undefined;
 			return true;
 		}
@@ -231,7 +231,7 @@ package org.as3commons.collections.iterators {
 			_lastLookUp = "";
 			while (_iterator.hasNext()) {
 				_iterator.next();
-				if (item === _iterator.current) return;
+				if (item === _iterator.currentItem) return;
 			}
 		}
 
@@ -242,7 +242,7 @@ package org.as3commons.collections.iterators {
 			_lastLookUp = "";
 			while (_iterator.hasPrevious()) {
 				_iterator.previous();
-				if (item === _iterator.current) return;
+				if (item === _iterator.currentItem) return;
 			}
 		}
 

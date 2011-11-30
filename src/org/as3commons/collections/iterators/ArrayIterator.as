@@ -122,7 +122,7 @@ package org.as3commons.collections.iterators {
 		/**
 		 * @inheritDoc
 		 */
-		public function get current() : * {
+		public function get currentItem() : * {
 			return _array[_current];
 		}
 
@@ -144,7 +144,7 @@ package org.as3commons.collections.iterators {
 		/**
 		 * @inheritDoc
 		 */
-		public function remove() : Boolean {
+		public function removeItem() : Boolean {
 			if (_current == -1) return false;
 			
 			if (_current == _next) { // removed after previous()

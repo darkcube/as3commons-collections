@@ -221,7 +221,7 @@ package org.as3commons.collections.framework {
 		 * 
 		 * @return The last returned item or <code>undefined</code> if no such item.
 		 */
-		function get current() : *;
+		function get currentItem() : *;
 
 		/**
 		 * Resets the iterator to the position before the first item.
@@ -244,7 +244,7 @@ package org.as3commons.collections.framework {
 		 * 
 		 * @return <code>true</code> if an item has been removed.
 		 */
-		function remove() : Boolean;
+		function removeItem() : Boolean;
 
 	}
 }
