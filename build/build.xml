@@ -69,6 +69,7 @@
 			<arg line="-package org.as3commons.collections.iterators 'Special purpose iterators (public).'" />
 			<arg line="-package org.as3commons.collections.utils 'Collection framework utils (public).'" />
 			<arg line="-library-path ${FLEX_HOME}/frameworks/locale/en_US" />
+			<arg line="-library-path ${FLEX_HOME}/frameworks/libs" />
 		</exec>
 
 		<fixcrlf srcdir="${DOC}/apidoc" includes="**/*.*" eol="lf" />

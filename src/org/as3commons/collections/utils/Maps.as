@@ -225,7 +225,7 @@ package org.as3commons.collections.utils {
 		 * of the same type.
 		 * 
 		 * <p>If filters are specified the resulting map only contains mappings that
-		 * meet the supplied predicates.<p>
+		 * meet the supplied predicates.</p>
 		 * 
 		 * <p>The key filter function accepts the current key and returns a boolean
 		 * value (<code>true</code> if the key is accepted).</p>
@@ -275,7 +275,7 @@ package org.as3commons.collections.utils {
 		 * Copies mappings from one to another map.
 		 * 
 		 * <p>If filters are specified only mappings are copied that meet
-		 * the supplied predicates.<p>
+		 * the supplied predicates.</p>
 		 * 
 		 * <p>The key filter function accepts the current key and returns a boolean
 		 * value (<code>true</code> if the key is accepted).</p>

@@ -38,7 +38,7 @@ package org.as3commons.collections {
 	 * <li>Adding or removing of items in front (or in between) - linear runtime O(n).<br />
 	 * <code>addFirst(), addAt(), addAllAt(), removeFirst(), removeAt(), removeAllAt()</code></li>
 	 * <li>Item lookup operations - linear runtime O(n).<br />
-	 * has(), count(), firstIndexOf(), lastIndexOf(), remove(), removeAll()</code></li>
+	 * <code>has(), count(), firstIndexOf(), lastIndexOf(), remove(), removeAll()</code></li>
 	 * </ul>
 	 * 
 	 * <p><strong>Notes</strong></p>

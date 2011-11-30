@@ -47,9 +47,9 @@ package org.as3commons.collections {
 	 * <p>In any case, you are safe using the <code>StringMap</code> with non-numeric
 	 * literals or non negative integer values.</p>
 	 * 
-	 * <p>Note to the universal type <code>*</code>. The <code>StringMap</code> still implements
+	 * <p>Note to the universal type <code>* </code>. The <code>StringMap</code> still implements
 	 * the <code>IMap</code> interface. This interface allows to pass and returns objects of the universal
-	 * type <code>*</code>. This is not actually what we like, but since ActionScript does not
+	 * type <code>* </code>. This is not actually what we like, but since ActionScript does not
 	 * support generics, there is no other way to define a base interface for all map
 	 * implementations. If you are not comfortable with this, please make your own custom
 	 * typed copy of this class.</p>

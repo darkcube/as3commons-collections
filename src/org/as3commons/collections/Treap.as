@@ -50,9 +50,9 @@ package org.as3commons.collections {
 	 * <li>Getting or removing of items at start or at end - constant runtime O(1).<br />
 	 * <code>first, last, removeFirst(), removeLast()</code></li>
 	 * <li>Adding an removing of items - logarithmic runtime O(log n).<br />
-	 * add(), remove()</code></li>
+	 * <code>add(), remove()</code></li>
 	 * <li>Inspection operations - logarithmic runtime O(log n).<br />
-	 * has(), lesser(), higher(), equalItems()</code></li>
+	 * <code>has(), lesser(), higher(), equalItems()</code></li>
 	 * </ul>
 	 * 
 	 * <p><strong>Notes</strong></p>

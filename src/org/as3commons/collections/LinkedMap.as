@@ -36,9 +36,9 @@ package org.as3commons.collections {
 	 * <li>Adding, getting or removing of items - constant runtime O(1).<br />
 	 * <code>add(), addFirst(), addLast(), first, last, removeFirst(), removeLast()</code></li>
 	 * <li>Key lookup operations - constant runtime O(1).<br />
-	 * hasKey(), addBefore(), addAfter(), itemFor(), replaceFor(), removeKey()</code></li>
+	 * <code>hasKey(), addBefore(), addAfter(), itemFor(), replaceFor(), removeKey()</code></li>
 	 * <li>Item lookup operations - linear runtime O(n).<br />
-	 * has(), count(), remove(), removeAll()</code></li>
+	 * <code>has(), count(), remove(), removeAll()</code></li>
 	 * </ul>
 	 * 
 	 * <p><strong>Notes</strong></p>

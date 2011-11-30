@@ -33,7 +33,7 @@ package org.as3commons.collections {
 	 * <li>Adding of items - constant runtime O(1).<br />
 	 * <code>add()</code></li>
 	 * <li>Item lookup operations - constant runtime O(1).<br />
-	 * has(), remove()</code></li>
+	 * <code>has(), remove()</code></li>
 	 * </ul>
 	 * 
 	 * <p><strong>Notes</strong></p>

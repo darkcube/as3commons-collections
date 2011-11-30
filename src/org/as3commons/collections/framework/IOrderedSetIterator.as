@@ -26,7 +26,7 @@ package org.as3commons.collections.framework {
 	 * <li>Insertion operations.<br />
 	 * <code>addBefore(), addAfter()</code></li>
 	 * <li>Replacing of items.<br />
-	 * <code>replace()</code></li></li>
+	 * <code>replace()</code></li>
 	 * </ul>
 	 * 
 	 * @author Jens Struwe 18.03.2010

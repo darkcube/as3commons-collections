@@ -26,6 +26,7 @@ package org.as3commons.collections.framework {
 	 * The right child of a tree node is always greater than its parent node.
 	 * Adding, finding and removing of items can be done in logarithmic time.</p>
 	 * 
+	 * <ul>
 	 * <li>Elements are addressed by instance directly or sequentially accessed using an iterator.</li>
 	 * <li>Always ordered by a specific sort criterion.</li>
 	 * <li>Cannot contain duplicates.</li>

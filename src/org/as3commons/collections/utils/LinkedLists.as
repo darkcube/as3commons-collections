@@ -133,7 +133,7 @@ package org.as3commons.collections.utils {
 		 * of the same type.
 		 * 
 		 * <p>If a filter is specified the resulting list only contains items that
-		 * meet the supplied predicates.<p>
+		 * meet the supplied predicates.</p>
 		 * 
 		 * <p>The filter function accepts the current item and returns a boolean
 		 * value (<code>true</code> if the item is accepted).</p>
@@ -167,7 +167,7 @@ package org.as3commons.collections.utils {
 		 * Copies items from one list to another.
 		 * 
 		 * <p>If a filter is specified only items are copied that meet the
-		 * supplied predicates.<p>
+		 * supplied predicates.</p>
 		 * 
 		 * <p>The filter function accepts the current item and returns a boolean
 		 * value (<code>true</code> if the item is accepted).</p>
