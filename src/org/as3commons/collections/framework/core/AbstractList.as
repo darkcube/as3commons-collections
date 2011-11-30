@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package org.as3commons.collections.framework.core {
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
+	
 	import org.as3commons.collections.framework.IDataProvider;
 	import org.as3commons.collections.framework.IIterator;
 	import org.as3commons.collections.framework.IList;
@@ -23,7 +26,7 @@ package org.as3commons.collections.framework.core {
 	 * 
 	 * @author Jens Struwe 23.03.2010
 	 */
-	public class AbstractList implements IList, IDataProvider {
+	public class AbstractList extends Proxy implements IList, IDataProvider {
 		
 		/**
 		 * The internal array.
@@ -219,6 +222,38 @@ package org.as3commons.collections.framework.core {
 		 */
 		as3commons_collections function get array_internal() : Array {
 			return _array;
+		}
+		
+		/*
+		 * Proxy
+		 */
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextNameIndex(index:int):int {
+			return index < size ? index + 1 : 0;
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextName(index:int):String {
+			return (index - 1).toString();
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextValue(index:int):* {
+			return itemAt(index - 1);
+		}    
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function callProperty(name:*, ... rest):* {
+			return null;
 		}
 		
 		/*
