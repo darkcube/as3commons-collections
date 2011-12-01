@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 package org.as3commons.collections {
+	import flash.utils.Dictionary;
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
+	
 	import org.as3commons.collections.framework.IIterator;
 	import org.as3commons.collections.framework.ISet;
 	import org.as3commons.collections.framework.core.SetIterator;
-
-	import flash.utils.Dictionary;
 
 	/**
 	 * Basic set implementation.
@@ -64,7 +66,7 @@ package org.as3commons.collections {
 	 * @see org.as3commons.collections.framework.ISet ISet interface - Detailed description of the base set features.
 	 * @see org.as3commons.collections.framework.ISetIterator ISetIterator interface - Detailed description of the base set iterator features.
 	 */
-	public class Set implements ISet {
+	public class Set extends Proxy implements ISet {
 
 		/**
 		 * The non string items.
@@ -80,6 +82,14 @@ package org.as3commons.collections {
 		 * The set size.
 		 */
 		private var _size : uint = 0;
+		
+		/**
+		 * Array for the proxy iterators currently being used.
+		 * 
+		 * We handle iterating over the collection multiple times at once by using this array
+		 * as a stack, with the most recent iteration as the last item in the array.
+		 */
+		private var _proxyIteratorCollection : Array = new Array();
 		
 		/**
 		 * Set constructor.
@@ -181,6 +191,57 @@ package org.as3commons.collections {
 		 */
 		public function iterator(cursor : * = undefined) : IIterator {
 			return new SetIterator(this);
+		}
+		
+		/*
+		 * Proxy
+		 */
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextNameIndex(index:int):int {
+			var currentIterator:IIterator;
+			
+			// Get the current iterator off the array stack
+			if( index == 0 ) {
+				currentIterator = iterator();
+				_proxyIteratorCollection.push( currentIterator );
+			}
+			else {
+				currentIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			}
+			
+			// Pop the iterator if it has no more elements
+			if( !currentIterator.hasNext() ) {
+				_proxyIteratorCollection.pop();
+				return 0;
+			}
+			else {
+				return index + 1;
+			}
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextName(index:int):String {
+			return (index - 1).toString();
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextValue(index:int):* {
+			var currentIterator:IIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			return currentIterator.next();
+		}    
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function callProperty(name:*, ... rest):* {
+			return null;
 		}
 	}
 }

@@ -15,6 +15,9 @@
  */
 package org.as3commons.collections.framework.core {
 
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
+	
 	import org.as3commons.collections.framework.IComparator;
 	import org.as3commons.collections.framework.IIterator;
 	import org.as3commons.collections.framework.ISortOrder;
@@ -28,7 +31,7 @@ package org.as3commons.collections.framework.core {
 	 * 
 	 * @author Jens Struwe 30.03.2010
 	 */
-	public class AbstractSortedCollection implements ISortOrder {
+	public class AbstractSortedCollection extends Proxy implements ISortOrder {
 
 		use namespace as3commons_collections;
 
@@ -46,6 +49,14 @@ package org.as3commons.collections.framework.core {
 		 * The size of the collection.
 		 */
 		protected var _size : uint = 0;
+		
+		/**
+		 * Array for the proxy iterators currently being used.
+		 * 
+		 * We handle iterating over the collection multiple times at once by using this array
+		 * as a stack, with the most recent iteration as the last item in the array.
+		 */
+		protected var _proxyIteratorCollection : Array = new Array();
 		
 		/**
 		 * AbstractSortedCollection constructor.
@@ -302,6 +313,57 @@ package org.as3commons.collections.framework.core {
 		 */
 		as3commons_collections function removeNode_internal(node : SortedNode) : void {
 			removeNode(node);
+		}
+		
+		/*
+		 * Proxy
+		 */
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextNameIndex(index:int):int {
+			var currentIterator:IIterator;
+			
+			// Get the current iterator off the array stack
+			if( index == 0 ) {
+				currentIterator = iterator();
+				_proxyIteratorCollection.push( currentIterator );
+			}
+			else {
+				currentIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			}
+			
+			// Pop the iterator if it has no more elements
+			if( !currentIterator.hasNext() ) {
+				_proxyIteratorCollection.pop();
+				return 0;
+			}
+			else {
+				return index + 1;
+			}
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextName(index:int):String {
+			return (index - 1).toString();
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextValue(index:int):* {
+			var currentIterator:IIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			return currentIterator.next();
+		}    
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function callProperty(name:*, ... rest):* {
+			return null;
 		}
 
 		/*

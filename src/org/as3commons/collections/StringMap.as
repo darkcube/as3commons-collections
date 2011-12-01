@@ -15,6 +15,9 @@
  */
 package org.as3commons.collections {
 
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
+	
 	import org.as3commons.collections.framework.IIterator;
 	import org.as3commons.collections.framework.IMap;
 	import org.as3commons.collections.framework.core.MapIterator;
@@ -62,7 +65,7 @@ package org.as3commons.collections {
 	 * @author Jens Struwe 19.09.2011
 	 * @see org.as3commons.collections.Map Basic map implementation - Basic map implementation description.
 	 */
-	public class StringMap implements IMap {
+	public class StringMap extends Proxy implements IMap {
 
 		/**
 		 * The stringed key item map.
@@ -73,6 +76,22 @@ package org.as3commons.collections {
 		 * The map size.
 		 */
 		protected var _size : uint = 0;
+		
+		/**
+		 * Array for the proxy iterators currently being used.
+		 * 
+		 * We handle iterating over the collection multiple times at once by using this array
+		 * as a stack, with the most recent iteration as the last item in the array.
+		 */
+		protected var _proxyIteratorCollection : Array = new Array();
+		
+		/**
+		 * Array for the proxy key iterators currently being used.
+		 * 
+		 * We handle iterating over the collection multiple times at once by using this array
+		 * as a stack, with the most recent iteration as the last item in the array.
+		 */
+		protected var _proxyKeyIteratorCollection : Array = new Array();
 		
 		/**
 		 * Map constructor.
@@ -252,6 +271,60 @@ package org.as3commons.collections {
 		 */
 		public function iterator(cursor : * = undefined) : IIterator {
 			return new MapIterator(this);
+		}
+		
+		/*
+		 * Proxy
+		 */
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextNameIndex(index:int):int {
+			var currentIterator:IIterator;
+			
+			// Get the current iterator off the array stack
+			if( index == 0 ) {
+				currentIterator = iterator();
+				_proxyKeyIteratorCollection.push( keyIterator() );
+				_proxyIteratorCollection.push( currentIterator );
+			}
+			else {
+				currentIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			}
+			
+			// Pop the iterator if it has no more elements
+			if( !currentIterator.hasNext() ) {
+				_proxyIteratorCollection.pop();
+				_proxyKeyIteratorCollection.pop();
+				return 0;
+			}
+			else {
+				return index + 1;
+			}
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextName(index:int):String {
+			var currentIterator:IIterator = _proxyKeyIteratorCollection[_proxyIteratorCollection.length-1];
+			return currentIterator.next();
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextValue(index:int):* {
+			var currentIterator:IIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			return currentIterator.next();
+		}    
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function callProperty(name:*, ... rest):* {
+			return null;
 		}
 		
 		/*

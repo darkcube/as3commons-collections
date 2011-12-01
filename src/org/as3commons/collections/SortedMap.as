@@ -15,6 +15,9 @@
  */
 package org.as3commons.collections {
 
+	import flash.utils.Dictionary;
+	import flash.utils.flash_proxy;
+	
 	import org.as3commons.collections.framework.IComparator;
 	import org.as3commons.collections.framework.IIterator;
 	import org.as3commons.collections.framework.ISortedMap;
@@ -23,9 +26,10 @@ package org.as3commons.collections {
 	import org.as3commons.collections.framework.core.SortedMapNode;
 	import org.as3commons.collections.framework.core.SortedNode;
 	import org.as3commons.collections.framework.core.as3commons_collections;
-
-	import flash.utils.Dictionary;
-
+	
+	use namespace flash_proxy;
+	use namespace as3commons_collections;
+	
 	/**
 	 * Sort order implementation of a map.
 	 * 
@@ -82,8 +86,6 @@ package org.as3commons.collections {
 	 */
 	public class SortedMap extends AbstractSortedDuplicatesCollection implements ISortedMap {
 
-		use namespace as3commons_collections;
-
 		/**
 		 * The non string keys.
 		 */
@@ -98,6 +100,14 @@ package org.as3commons.collections {
 		 * The stringed key item map.
 		 */
 		protected var _stringMap : Object;
+		
+		/**
+		 * Array for the proxy key iterators currently being used.
+		 * 
+		 * We handle iterating over the collection multiple times at once by using this array
+		 * as a stack, with the most recent iteration as the last item in the array.
+		 */
+		protected var _proxyKeyIteratorCollection : Array = new Array();
 		
 		/**
 		 * SortedMap constructor.
@@ -315,6 +325,45 @@ package org.as3commons.collections {
 			if (cursor is String) node = _stringMap[cursor];
 			else node = _items[cursor];
 			return new SortedMapIterator(this, node);
+		}
+		
+		/*
+		 * Proxy
+		 */
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextNameIndex(index:int):int {
+			var currentIterator:IIterator;
+			
+			// Get the current iterator off the array stack
+			if( index == 0 ) {
+				currentIterator = iterator();
+				_proxyKeyIteratorCollection.push( keyIterator() );
+				_proxyIteratorCollection.push( currentIterator );
+			}
+			else {
+				currentIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			}
+			
+			// Pop the iterator if it has no more elements
+			if( !currentIterator.hasNext() ) {
+				_proxyIteratorCollection.pop();
+				_proxyKeyIteratorCollection.pop();
+				return 0;
+			}
+			else {
+				return index + 1;
+			}
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextName(index:int):String {
+			var currentIterator:IIterator = _proxyKeyIteratorCollection[_proxyIteratorCollection.length-1];
+			return currentIterator.next();
 		}
 
 		/*

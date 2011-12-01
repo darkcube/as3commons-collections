@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 package org.as3commons.collections.framework.core {
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
+	
 	import org.as3commons.collections.framework.IComparator;
 	import org.as3commons.collections.framework.IInsertionOrder;
 	import org.as3commons.collections.framework.IIterator;
-	import org.as3commons.collections.framework.core.LinkedNode;
-	import org.as3commons.collections.framework.core.as3commons_collections;
 
 	/**
 	 * Abstract linked list based collection implementation.
 	 * 
 	 * @author Jens Struwe 04.03.2010
 	 */
-	public class AbstractLinkedCollection implements IInsertionOrder {
+	public class AbstractLinkedCollection extends Proxy implements IInsertionOrder {
 
 		/**
 		 * The first node.
@@ -41,6 +42,14 @@ package org.as3commons.collections.framework.core {
 		 * The size of the list.
 		 */
 		protected var _size : uint = 0;
+		
+		/**
+		 * Array for the proxy iterators currently being used.
+		 * 
+		 * We handle iterating over the collection multiple times at once by using this array
+		 * as a stack, with the most recent iteration as the last item in the array.
+		 */
+		protected var _proxyIteratorCollection : Array = new Array();
 
 		/**
 		 * AbstractLinkedCollection constructor.
@@ -210,6 +219,57 @@ package org.as3commons.collections.framework.core {
 		 */
 		as3commons_collections function get lastNode_internal() : LinkedNode {
 			return _last;
+		}
+		
+		/*
+		 * Proxy
+		 */
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextNameIndex(index:int):int {
+			var currentIterator:IIterator;
+			
+			// Get the current iterator off the array stack
+			if( index == 0 ) {
+				currentIterator = iterator();
+				_proxyIteratorCollection.push( currentIterator );
+			}
+			else {
+				currentIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			}
+			
+			// Pop the iterator if it has no more elements
+			if( !currentIterator.hasNext() ) {
+				_proxyIteratorCollection.pop();
+				return 0;
+			}
+			else {
+				return index + 1;
+			}
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextName(index:int):String {
+			return (index - 1).toString();
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextValue(index:int):* {
+			var currentIterator:IIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			return currentIterator.next();
+		}    
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function callProperty(name:*, ... rest):* {
+			return null;
 		}
 
 		/*

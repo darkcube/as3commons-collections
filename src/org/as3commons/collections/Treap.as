@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 package org.as3commons.collections {
-	import org.as3commons.collections.utils.NullComparator;
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
+	
+	import org.as3commons.collections.framework.IBinarySearchTree;
 	import org.as3commons.collections.framework.IComparator;
 	import org.as3commons.collections.framework.IIterator;
-	import org.as3commons.collections.framework.IBinarySearchTree;
 	import org.as3commons.collections.framework.core.TreapIterator;
 	import org.as3commons.collections.framework.core.TreapNode;
 	import org.as3commons.collections.framework.core.as3commons_collections;
+	import org.as3commons.collections.utils.NullComparator;
 
 	/**
 	 * Treap data structure implementation.
@@ -86,7 +89,7 @@ package org.as3commons.collections {
 	 * @see http://www.upgrade-cepis.org/issues/2004/5/up5-5Mosaic.pdf [1] Binary search tree performance comparision.
 	 * @see http://users.cs.fiu.edu/~weiss/dsaajava/code/DataStructures/ [2] The borrowed Java implementation of a treap.
 	 */
-	public class Treap implements IBinarySearchTree {
+	public class Treap extends Proxy implements IBinarySearchTree {
 		
 		use namespace as3commons_collections;
 
@@ -104,6 +107,14 @@ package org.as3commons.collections {
 		 * The size of the treap.
 		 */
 		protected var _size : uint = 0;
+		
+		/**
+		 * Array for the proxy iterators currently being used.
+		 * 
+		 * We handle iterating over the collection multiple times at once by using this array
+		 * as a stack, with the most recent iteration as the last item in the array.
+		 */
+		private var _proxyIteratorCollection : Array = new Array();
 		
 		/**
 		 * Treap constructor.
@@ -365,6 +376,57 @@ package org.as3commons.collections {
 		 */
 		as3commons_collections function removeNode_internal(node : TreapNode) : void {
 			removeNode(node);
+		}
+		
+		/*
+		 * Proxy
+		 */
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextNameIndex(index:int):int {
+			var currentIterator:IIterator;
+			
+			// Get the current iterator off the array stack
+			if( index == 0 ) {
+				currentIterator = iterator();
+				_proxyIteratorCollection.push( currentIterator );
+			}
+			else {
+				currentIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			}
+			
+			// Pop the iterator if it has no more elements
+			if( !currentIterator.hasNext() ) {
+				_proxyIteratorCollection.pop();
+				return 0;
+			}
+			else {
+				return index + 1;
+			}
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextName(index:int):String {
+			return (index - 1).toString();
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function nextValue(index:int):* {
+			var currentIterator:IIterator = _proxyIteratorCollection[_proxyIteratorCollection.length-1];
+			return currentIterator.next();
+		}    
+		
+		/**
+		 *  @inheritDoc
+		 */
+		override flash_proxy function callProperty(name:*, ... rest):* {
+			return null;
 		}
 
 		/*
