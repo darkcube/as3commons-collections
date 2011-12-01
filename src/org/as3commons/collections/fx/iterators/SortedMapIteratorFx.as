@@ -115,7 +115,7 @@ package org.as3commons.collections.fx.iterators {
 		 */
 		public function get afterLast():Boolean
 		{
-			return !hasNext();
+			return _next == null && _current == null;
 		}
 		
 		/**
@@ -123,7 +123,7 @@ package org.as3commons.collections.fx.iterators {
 		 */
 		public function get beforeFirst():Boolean
 		{
-			return !hasPrevious();
+			return _next != null && _current == null;
 		}
 		
 		/**
