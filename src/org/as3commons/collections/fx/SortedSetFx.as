@@ -239,7 +239,7 @@ package org.as3commons.collections.fx {
 				node.item,
 				nextNode
 			));
-			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [node.item]));
 		}
 	}
 }

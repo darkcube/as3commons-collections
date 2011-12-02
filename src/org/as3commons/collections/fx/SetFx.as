@@ -100,7 +100,7 @@ package org.as3commons.collections.fx {
 					this,
 					item
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [item]));
 			}
 			return removed;
 		}

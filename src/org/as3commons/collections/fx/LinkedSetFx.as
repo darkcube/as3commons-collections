@@ -156,7 +156,7 @@ package org.as3commons.collections.fx {
 					first.item,
 					firstNode_internal
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [item]));
 				return first.item;
 			}
 			return undefined;
@@ -174,7 +174,7 @@ package org.as3commons.collections.fx {
 					this,
 					last.item
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [item]));
 				return last.item;
 			}
 			return undefined;
@@ -379,7 +379,7 @@ package org.as3commons.collections.fx {
 				node.item,
 				nextNode
 			));
-			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [node.item]));
 		}
 	}
 }
