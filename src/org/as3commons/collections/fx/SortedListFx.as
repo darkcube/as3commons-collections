@@ -93,7 +93,7 @@ package org.as3commons.collections.fx {
 				item,
 				null
 			));
-			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD, index, -1, [item]));
 			return index;
 		}
 

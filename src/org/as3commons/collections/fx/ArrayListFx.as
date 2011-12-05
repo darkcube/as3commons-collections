@@ -92,7 +92,7 @@ package org.as3commons.collections.fx {
 				item,
 				null
 			));
-			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD, 0, -1, [item]));
 		}
 		
 		/**
@@ -108,7 +108,7 @@ package org.as3commons.collections.fx {
 				item,
 				null
 			));
-			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD, _array.length - 1, -1, [item]));
 		}
 
 		/**
@@ -125,7 +125,7 @@ package org.as3commons.collections.fx {
 					item,
 					null
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD, index, -1, [item]));
 			}
 			return added;
 		}
@@ -144,7 +144,7 @@ package org.as3commons.collections.fx {
 					null,
 					items
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD, index, -1, [items]));
 			}
 			return added;
 		}
@@ -163,7 +163,7 @@ package org.as3commons.collections.fx {
 					item,
 					null
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REPLACE));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REPLACE, index, -1, [item]));
 			}
 			return replaced;
 		}
@@ -218,7 +218,7 @@ package org.as3commons.collections.fx {
 				item,
 				null
 			));
-			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.ADD, index, -1, [item]));
 			return index;
 		}
 
