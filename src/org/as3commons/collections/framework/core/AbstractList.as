@@ -231,6 +231,38 @@ package org.as3commons.collections.framework.core {
 		/**
 		 *  @inheritDoc
 		 */
+		override flash_proxy function getProperty(name:*):*
+		{
+			if (name is QName)
+				name = name.localName;
+			
+			var index:int = -1;
+			try
+			{
+				// If caller passed in a number such as 5.5, it will be floored.
+				var n:Number = parseInt(String(name));
+				if (!isNaN(n))
+					index = int(n);
+			}
+			catch(e:Error) // localName was not a number
+			{
+			}
+			
+			if (index == -1)
+			{
+				throw new Error("unknownProperty: " + name);
+			}
+			else
+			{
+				return itemAt(index);
+			}
+			
+			return null;
+		}
+		
+		/**
+		 *  @inheritDoc
+		 */
 		override flash_proxy function nextNameIndex(index:int):int {
 			return index < size ? index + 1 : 0;
 		}
