@@ -130,7 +130,7 @@ package org.as3commons.collections.fx {
 					item,
 					null
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [item]));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, _array.length, -1, [item]));
 			}
 			return item;
 		}
@@ -149,7 +149,7 @@ package org.as3commons.collections.fx {
 					item,
 					null
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [item]));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, index, -1, [item]));
 			}
 			return item;
 		}
@@ -168,7 +168,7 @@ package org.as3commons.collections.fx {
 					null,
 					items
 				));
-				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, items));
+				dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, index, -1, items));
 			}
 			return items;
 		}
@@ -322,7 +322,7 @@ package org.as3commons.collections.fx {
 				item,
 				null
 			));
-			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, 0, -1, [item]));
+			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGE, false, false, CollectionEventKind.REMOVE, index, -1, [item]));
 		}
 
 	}
