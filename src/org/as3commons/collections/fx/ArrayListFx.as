@@ -392,7 +392,9 @@ package org.as3commons.collections.fx {
 		 */
 		public function createCursor():IViewCursor
 		{
-			return new ArrayListIteratorFx(this);
+			var cursor:IViewCursor = new ArrayListIteratorFx(this);
+			cursor.moveNext();
+			return cursor;
 		}
 		
 		/**

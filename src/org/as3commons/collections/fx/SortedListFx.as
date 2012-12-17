@@ -271,7 +271,9 @@ package org.as3commons.collections.fx {
 		 */
 		public function createCursor():IViewCursor
 		{
-			return new SortedListIteratorFx(this);
+			var cursor:IViewCursor = new SortedListIteratorFx(this);
+			cursor.moveNext();
+			return cursor;
 		}
 		
 		/**
